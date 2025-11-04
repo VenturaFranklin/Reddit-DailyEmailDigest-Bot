@@ -42,6 +42,7 @@ def compile_digest(reddit, test=False):
     for subreddit in SUBREDDITS:
         compiled_content = ""
         submissions = reddit.subreddit(subreddit).top(time_filter=TIME_RANGE)
+        i = 0
         for i, submission in enumerate(submissions, start=1):
             if submission.is_self:
                 text = submission.selftext.replace("\n", "<br />")
@@ -56,14 +57,15 @@ def compile_digest(reddit, test=False):
             link = f'<a href="https://www.reddit.com{submission.permalink}">{submission.title}</a>'
             new_content = f"<h2>{i}. {link}</h2><p>{text}</p><p>{submission.score} upvotes; {submission.num_comments} comments; By: by u/{submission.author} on {date_str}<br />{link}</p><br /><hr><br />"
             compiled_content += new_content
-        subject = f"{subreddit.title()} {i} Top Posts for {datetime.today().strftime('%Y-%m-%d')}"
-        print(subject)
-        if not test:
-            send_email(subject=subject, html=compiled_content)
-        else:
-            print(compiled_content)
-            print("=" * 80)
-            print("\n")
+        if i:
+            subject = f"{subreddit.title()} {i} Top Posts for {datetime.today().strftime('%Y-%m-%d')}"
+            print(subject)
+            if not test:
+                send_email(subject=subject, html=compiled_content)
+            else:
+                print(compiled_content)
+                print("=" * 80)
+                print("\n")
 
 
 if __name__ == "__main__":
